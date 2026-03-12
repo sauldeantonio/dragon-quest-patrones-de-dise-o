@@ -1,12 +1,13 @@
 package com.taller.patrones.interfaces.rest;
 
 import com.taller.patrones.application.BattleService;
+import com.taller.patrones.domain.Attack;
 import com.taller.patrones.domain.Battle;
 import com.taller.patrones.domain.Character;
+import com.taller.patrones.infrastructure.combat.attackFactory.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -15,6 +16,13 @@ import java.util.Map;
 public class BattleController {
 
     private final BattleService battleService = new BattleService();
+    private final Map attackFactories = Map.of("TACKLE", new AttackTackleFactory().createAttack(),
+            "SLASH" , new AttackSlashFactory().createAttack(),
+            "FIREBALL" , new AttackFireballFactory().createAttack(),
+            "ICE_BEAM" , new AttackIceBeamFactory().createAttack(),
+            "POISON_STING" , new AttackPoisonStingFactory().createAttack(),
+            "THUNDER" , new AttackThunderFactory().createAttack(),
+            "METEOR" , new AttackMeteorFactory().createAttack());
 
     @PostMapping("/start")
     public ResponseEntity<Map<String, Object>> startBattle(@RequestBody(required = false) Map<String, String> body) {

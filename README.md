@@ -31,9 +31,12 @@ src/main/java/com/taller/patrones/
 **Situación:** Quieres añadir el ataque "Meteoro" (120 de poder, tipo especial). Abres `CombatEngine` y ves que tanto `createAttack()` como `calculateDamage()` tienen un `switch` que crece con cada ataque o tipo nuevo.
 
 **Preguntas:**
-- ¿Qué problema te encuentras al añadir "Meteoro"?
+- ¿Qué problema te encuentras al añadir "Meteoro"? 
+Se hace más largo el switch case, y tengo que saberme el orden de los parametros al poner la información de meteor.
 - ¿Qué pasa si mañana piden 10 ataques más?
+Switch case gigante el ilegeblie
 - ¿Qué patrón permitiría añadir ataques **sin modificar** `CombatEngine`?
+Factory, con una interfaz para crear ataques implementada por un creador de cada ataque.
 
 **Pista:** Busca en `infrastructure/combat/CombatEngine.java`
 
@@ -47,9 +50,11 @@ Además, te piden un nuevo tipo: "CRÍTICO", con fórmula `daño * 1.5` y 20% de
 
 **Preguntas:**
 - ¿Qué principio SOLID se viola al añadir otro `case` en el switch?
+El principio de Open To Extend close to Modify, ya que estas haciendo que una clase con daño no haga daño.
 - ¿Qué patrón permitiría tener fórmulas de daño intercambiables sin tocar el código existente?
+Strategy
 
-**Pista:** Cada tipo de ataque (NORMAL, SPECIAL, STATUS) tiene una fórmula distinta.
+- **Pista:** Cada tipo de ataque (NORMAL, SPECIAL, STATUS) tiene una fórmula distinta.
 
 ---
 
@@ -65,8 +70,11 @@ Ahora necesitas soportar: equipamiento, buffos temporales, clase (guerrero/mago)
 
 **Preguntas:**
 - ¿Qué problema tiene un constructor con muchos parámetros?
+No se entiende a simple vista, y tienes que memorizarte el orden los parametros al instanciar objetos.
 - ¿Cómo harías para que `new Character(...)` sea legible cuando hay valores por defecto?
+Constructor vacio o con pocos parametros, e ir dandole valores poco a poco con un patrón builder.
 - ¿Qué patrón permite construir objetos complejos paso a paso?
+Builder
 
 **Pista:** Mira cómo se crean los personajes en `BattleService` y en el endpoint `/start/external`.
 
@@ -74,12 +82,15 @@ Ahora necesitas soportar: equipamiento, buffos temporales, clase (guerrero/mago)
 
 ### 4. Un único almacén de batallas
 
-**Situación:** `BattleRepository` usa un `Map` estático para que funcione. Pero `BattleService` hace `new BattleRepository()` cada vez. Si otro equipo crea un `TournamentService` que también hace `new BattleRepository()`, ¿compartirían las batallas?
+**Situación:** `BattleRepository` usa un `Map` estático para que funcione. Pero `BattleService` hace `new BattleRepository()` cada vez. Si otro equipo crea un `TournamentService` que también hace `new BattleRepository()`, ¿compartirían las batallas? No
 
 **Preguntas:**
 - ¿Qué pasaría si dos clases crean su propio `BattleRepository` sin el `static`?
+Que no pueden acceder a las batallas uno del otro, habría varios BattleRespository independientes.
 - ¿Cómo asegurar que **toda la aplicación** use la misma instancia de almacenamiento?
+Mediante una única instancia a la que accedan las clases que necesitan.
 - ¿Qué patrón garantiza una única instancia de una clase?
+Singleton.
 
 **Pista:** `infrastructure/persistence/BattleRepository.java`
 
@@ -93,8 +104,11 @@ Mañana llega otro proveedor con formato distinto: `player.health`, `player.atta
 
 **Preguntas:**
 - ¿Qué problema hay en poner la lógica de conversión en el controller?
+Tocar lógica en infraestructura y persistencia genera problemas escalables y cuesta más el testing.
 - ¿Cómo aislar la conversión "formato externo → nuestro dominio" para no ensuciar el controller?
+Usando una clase que uniformice los datos que recibe de JSON
 - ¿Qué patrón permite que un objeto "adaptado" se use como si fuera uno de los nuestros?
+Adapter
 
 **Pista:** `interfaces/rest/BattleController.java` — método `startBattleFromExternal`
 
@@ -112,7 +126,9 @@ Ahora mismo solo existe `battle.log()`. Tendrías que añadir código en `Battle
 **Preguntas:**
 - ¿Qué pasa si añades 5 "suscriptores" más? ¿Cuántas líneas tocarías en `applyDamage()`?
 - ¿Cómo desacoplar "ejecutar ataque" de "notificar a quien le interese"?
+Haciendo que applyDamage() notifique a quienes reciben daño los cambios.
 - ¿Qué patrón permite que varios objetos reaccionen a un evento sin que el emisor los conozca?
+Observer
 
 **Pista:** El método `applyDamage` en `BattleService` es el único que sabe cuándo hay daño.
 
@@ -126,8 +142,11 @@ Ahora el ataque se ejecuta directamente en `applyDamage()`. No hay registro de "
 
 **Preguntas:**
 - ¿Qué tendrías que cambiar para poder "deshacer"?
+El applyDamage() para que guarde registro del daño realizado.
 - ¿Cómo encapsular una acción (ataque) para poder ejecutarla, guardarla y revertirla?
+Que al ejecutar una acción se guarde en una pila de acciones
 - ¿Qué patrón trata las acciones como objetos de primera clase?
+Command
 
 **Pista:** La lógica del ataque está en `BattleService.applyDamage()`.
 
@@ -139,7 +158,9 @@ Ahora el ataque se ejecuta directamente en `applyDamage()`. No hay registro de "
 
 **Preguntas:**
 - ¿Qué problema hay en exponer muchos detalles internos a quien solo quiere "hacer un ataque"?
+Dependencias y complejidad innecesaria, asi como problemas de seguridad.
 - ¿Qué patrón ofrece una interfaz simple que oculta la complejidad del subsistema?
+Facade
 
 **Pista:** Piensa en qué necesita saber un cliente para ejecutar un ataque.
 
@@ -153,7 +174,9 @@ Ahora cada ataque es independiente. No hay forma de agrupar varios.
 
 **Preguntas:**
 - ¿Cómo representar "un ataque que son varios ataques"?
+Que haya una clase que se componga de ataques
 - ¿Qué patrón permite tratar un grupo de objetos igual que un objeto individual?
+Composite
 
 **Pista:** `Attack` es una unidad. ¿Cómo hacer que varios `Attack` se comporten como uno?
 
