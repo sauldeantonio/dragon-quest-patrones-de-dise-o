@@ -1,12 +1,15 @@
 package com.taller.patrones.infrastructure.combat;
 
 import com.taller.patrones.domain.Attack;
+import com.taller.patrones.domain.attackComposite.AttackComposite;
 import com.taller.patrones.domain.Character;
 import com.taller.patrones.infrastructure.combat.attackFactory.*;
 import com.taller.patrones.infrastructure.combat.damageStrategy.CriticalDamageStrategy;
 import com.taller.patrones.infrastructure.combat.damageStrategy.NormalDamageStrategy;
 import com.taller.patrones.infrastructure.combat.damageStrategy.SpecialDamageStrategy;
 import com.taller.patrones.infrastructure.combat.damageStrategy.StatusDamageStrategy;
+
+import java.util.Deque;
 
 /**
  * Motor de combate. Calcula daño y crea ataques.
@@ -19,7 +22,7 @@ public class CombatEngine {
      * Crea un ataque a partir de su nombre.
      * Cada ataque nuevo requiere modificar este método.
      */
-    public Attack createAttack(String name) {
+    public AttackComposite createAttack(String name) {
         String n = name != null ? name.toUpperCase() : "";
         return switch (n) {
             case "TACKLE" -> new AttackTackleFactory().createAttack();
@@ -29,6 +32,7 @@ public class CombatEngine {
             case "POISON_STING" -> new AttackPoisonStingFactory().createAttack();
             case "THUNDER" -> new AttackThunderFactory().createAttack();
             case "METEOR" -> new AttackMeteorFactory().createAttack();
+            case "COMBO TRIPLE" -> new AttackComboTripleFactory().createAttack();
             default -> new Attack("Golpe", 30, Attack.AttackType.NORMAL);
         };
     }
@@ -37,12 +41,12 @@ public class CombatEngine {
      * Calcula el daño según el tipo de ataque.
      * Cada fórmula nueva (ej. crítico, veneno con tiempo) requiere modificar este switch.
      */
-    public int calculateDamage(Character attacker, Character defender, Attack attack) {
+    public int calculateDamage(Character attacker, Character defender, AttackComposite attack) {
         return switch (attack.getType()) {
-            case NORMAL -> new NormalDamageStrategy().calculateDamage(attacker,defender,attack);
-            case SPECIAL -> new SpecialDamageStrategy().calculateDamage(attacker,defender,attack);
-            case STATUS -> new StatusDamageStrategy().calculateDamage(attacker,defender,attack);
-            case CRITIC -> new CriticalDamageStrategy().calculateDamage(attacker,defender,attack);
+            case NORMAL -> new NormalDamageStrategy().calculateDamage(attacker, defender, attack);
+            case SPECIAL -> new SpecialDamageStrategy().calculateDamage(attacker, defender, attack);
+            case STATUS -> new StatusDamageStrategy().calculateDamage(attacker, defender, attack);
+            case CRITIC -> new CriticalDamageStrategy().calculateDamage(attacker, defender, attack);
         };
     }
 }

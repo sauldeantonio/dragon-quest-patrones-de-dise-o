@@ -124,7 +124,7 @@ Adapter
 Ahora mismo solo existe `battle.log()`. Tendrías que añadir código en `BattleService.applyDamage()` para cada uno de estos casos.
 
 **Preguntas:**
-- ¿Qué pasa si añades 5 "suscriptores" más? ¿Cuántas líneas tocarías en `applyDamage()`?
+- ¿Qué pasa si añades 5 "suscriptores" más? ¿Cuántas líneas tocarías en `applyDamage()`? Añadiría más logs
 - ¿Cómo desacoplar "ejecutar ataque" de "notificar a quien le interese"?
 Haciendo que applyDamage() notifique a quienes reciben daño los cambios.
 - ¿Qué patrón permite que varios objetos reaccionen a un evento sin que el emisor los conozca?
