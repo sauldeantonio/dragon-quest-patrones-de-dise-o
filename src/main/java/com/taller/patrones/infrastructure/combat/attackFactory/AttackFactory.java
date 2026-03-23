@@ -1,8 +1,7 @@
 package com.taller.patrones.infrastructure.combat.attackFactory;
 
-import com.taller.patrones.domain.Attack;
-import com.taller.patrones.domain.attackComposite.AttackComposite;
+import com.taller.patrones.domain.attack.Attack;
 
 public interface AttackFactory {
-    AttackComposite createAttack();
+    Attack createAttack();
 }

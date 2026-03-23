@@ -1,5 +1,8 @@
 package com.taller.patrones.domain;
 
+/**
+ * Buen builder
+ */
 public class CharacterBuilder {
     private String name;
     private int currentHp;
@@ -17,7 +20,7 @@ public class CharacterBuilder {
 
     public CharacterBuilder currentHp(int currentHp) {
         this.currentHp = currentHp;
-        return this;
+        return this; //Si no usas el currentHp porque al iniciar va a ser igual que el maxHp, puedes borrar esto sin miedo.
     }
 
     public CharacterBuilder maxHp(int maxHp) {
@@ -50,7 +53,8 @@ public class CharacterBuilder {
         return this;
     }
 
-    public Character build(){
-        return new Character(this.name,this.maxHp, this.attack, this.defense, this.speed, this.characterClass, this.equipment);
+    public Character build() {
+        return new Character(this.name, this.maxHp, this.attack, this.defense, this.speed, this.characterClass,
+                this.equipment);
     }
 }

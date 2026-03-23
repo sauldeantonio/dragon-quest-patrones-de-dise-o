@@ -3,6 +3,7 @@ package com.taller.patrones.interfaces.rest;
 import com.taller.patrones.application.BattleService;
 import com.taller.patrones.domain.Battle;
 import com.taller.patrones.domain.Character;
+import com.taller.patrones.domain.attack.Attack;
 import com.taller.patrones.infrastructure.combat.attackFactory.*;
 import com.taller.patrones.interfaces.rest.battleControllerAdapter.BattleControllerAdapter;
 import com.taller.patrones.interfaces.rest.battleControllerAdapter.BattleControllerAdapterJSON;
@@ -17,13 +18,18 @@ import java.util.Map;
 public class BattleController {
 
     private final BattleService battleService = new BattleService();
-    private final Map attackFactories = Map.of("TACKLE", new AttackTackleFactory().createAttack(),
-            "SLASH" , new AttackSlashFactory().createAttack(),
-            "FIREBALL" , new AttackFireballFactory().createAttack(),
-            "ICE_BEAM" , new AttackIceBeamFactory().createAttack(),
-            "POISON_STING" , new AttackPoisonStingFactory().createAttack(),
-            "THUNDER" , new AttackThunderFactory().createAttack(),
-            "METEOR" , new AttackMeteorFactory().createAttack());
+    /**
+     * Recuerda paremetrizar los mapas y listas. También, el nombre de este mapa es raro porque es un mapa
+     * de ataques, no de factorias de ataques. Tampoco lo usas al final, no sé si es por falta de tiempo y quisiste
+     * dejar escrita tu idea.
+     */
+    private final Map<String, Attack> attackFactories = Map.of("TACKLE", new AttackTackleFactory().createAttack(),
+            "SLASH", new AttackSlashFactory().createAttack(),
+            "FIREBALL", new AttackFireballFactory().createAttack(),
+            "ICE_BEAM", new AttackIceBeamFactory().createAttack(),
+            "POISON_STING", new AttackPoisonStingFactory().createAttack(),
+            "THUNDER", new AttackThunderFactory().createAttack(),
+            "METEOR", new AttackMeteorFactory().createAttack());
 
     @PostMapping("/start")
     public ResponseEntity<Map<String, Object>> startBattle(@RequestBody(required = false) Map<String, String> body) {
@@ -54,8 +60,12 @@ public class BattleController {
      */
     @PostMapping("/start/external")
     public ResponseEntity<Map<String, Object>> startBattleFromExternal(@RequestBody Map<String, Object> body) {
-        BattleControllerAdapter adapter= new BattleControllerAdapterJSON();
-        return adapter.startBattleFromExternal(body,battleService);
+        BattleControllerAdapter adapter = new BattleControllerAdapterJSON();
+        return adapter.startBattleFromExternal(body,
+                battleService); //Yo habría usado el adapter para "adaptar" los datos
+        //a un objeto interno y ya ese objeto usarlo en la lógica para empezar las batallas. Con este approach, si aparece un nuevo
+        //formato lo tienes que cambiar todo. Pregúntate siempre en un código qué es siempre lo mismo (lógica de empezar la batalla)
+        //Y qué cambia (formato de los datos de entrada), y según eso ya diseñas la solución :)
     }
 
     @GetMapping("/{battleId}")
@@ -67,7 +77,7 @@ public class BattleController {
 
     @PostMapping("/{battleId}/attack")
     public ResponseEntity<Map<String, Object>> attack(@PathVariable String battleId,
-                                                       @RequestBody Map<String, String> body) {
+                                                      @RequestBody Map<String, String> body) {
         Battle battle = battleService.getBattle(battleId);
         if (battle == null) return ResponseEntity.notFound().build();
 
@@ -91,6 +101,20 @@ public class BattleController {
         }
         String attack = BattleService.ENEMY_ATTACKS.get((int) (Math.random() * BattleService.ENEMY_ATTACKS.size()));
         battleService.executeEnemyAttack(battleId, attack);
+        return ResponseEntity.ok(toBattleDto(battleService.getBattle(battleId)));
+    }
+
+    /**
+     * Este método funciona, puedes probarlo con el inspector de tu navegador, obteniendo el battle id y consultando este endpoint
+     */
+    @GetMapping("/{battleId}/undo")
+    public ResponseEntity<Map<String, Object>> undo(@PathVariable String battleId) {
+        Battle battle = battleService.getBattle(battleId);
+        if (battle == null) return ResponseEntity.notFound().build();
+        boolean undone = battleService.undoLastAttack();
+        if (!undone) {
+            return ResponseEntity.badRequest().body(Map.of("error", "No hay ataques que deshacer"));
+        }
         return ResponseEntity.ok(toBattleDto(battleService.getBattle(battleId)));
     }
 

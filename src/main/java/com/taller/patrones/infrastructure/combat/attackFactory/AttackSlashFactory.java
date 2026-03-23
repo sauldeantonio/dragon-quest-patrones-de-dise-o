@@ -1,12 +1,12 @@
 package com.taller.patrones.infrastructure.combat.attackFactory;
 
-import com.taller.patrones.domain.Attack;
-import com.taller.patrones.domain.attackComposite.AttackComposite;
+import com.taller.patrones.domain.attack.Attack;
+import com.taller.patrones.domain.attack.SimpleAttack;
 
 public class AttackSlashFactory implements AttackFactory {
 
     @Override
-    public AttackComposite createAttack() {
-        return new Attack("Slash", 55, Attack.AttackType.NORMAL);
+    public Attack createAttack() {
+        return new SimpleAttack("Slash", 55, SimpleAttack.AttackType.NORMAL);
     }
 }
