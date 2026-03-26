@@ -1,20 +1,19 @@
 package com.taller.patrones.infrastructure.combat.attackFactory;
 
-import com.taller.patrones.domain.Attack;
-import com.taller.patrones.domain.attackComposite.AttackComplex;
-import com.taller.patrones.domain.attackComposite.AttackComposite;
+import com.taller.patrones.domain.attack.Attack;
+import com.taller.patrones.domain.attack.AttackCombo;
+import com.taller.patrones.domain.attack.SimpleAttack;
 
-import java.util.Deque;
 import java.util.LinkedList;
 
-public class AttackComboTripleFactory implements  AttackFactory{
+public class AttackComboTripleFactory implements AttackFactory {
 
     @Override
-    public AttackComposite createAttack() {
-        LinkedList<Attack> attacks=new LinkedList<>();
-        attacks.add((Attack) new AttackTackleFactory().createAttack());
-        attacks.add((Attack) new AttackSlashFactory().createAttack());
-        attacks.add((Attack) new AttackFireballFactory().createAttack());
-        return new AttackComplex(attacks);
+    public Attack createAttack() {
+        LinkedList<SimpleAttack> simpleAttacks = new LinkedList<>();
+        simpleAttacks.add((SimpleAttack) new AttackTackleFactory().createAttack());
+        simpleAttacks.add((SimpleAttack) new AttackSlashFactory().createAttack());
+        simpleAttacks.add((SimpleAttack) new AttackFireballFactory().createAttack());
+        return new AttackCombo(simpleAttacks);
     }
 }

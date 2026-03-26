@@ -6,19 +6,15 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Almacena las batallas activas en memoria.
- * <p>
- * Nota: BattleService hace new BattleRepository() cada vez. Si otro servicio
- * también creara su propio BattleRepository, ¿compartirían las batallas?
+ * Buen singleton
  */
 public class BattleRepository {
 
+    private static final Map<String, Battle> battles = new ConcurrentHashMap<>();
     private static BattleRepository instance;
 
     private BattleRepository() {
     }
-
-    private static final Map<String, Battle> battles = new ConcurrentHashMap<>();
 
     public static BattleRepository getInstance() {
         if (instance == null)

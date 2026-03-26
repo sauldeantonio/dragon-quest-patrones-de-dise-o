@@ -1,12 +1,12 @@
 package com.taller.patrones.infrastructure.combat.attackFactory;
 
-import com.taller.patrones.domain.Attack;
-import com.taller.patrones.domain.attackComposite.AttackComposite;
+import com.taller.patrones.domain.attack.Attack;
+import com.taller.patrones.domain.attack.SimpleAttack;
 
 public class AttackPoisonStingFactory implements AttackFactory {
 
     @Override
-    public AttackComposite createAttack() {
-        return new Attack("Poison Sting", 20, Attack.AttackType.STATUS);
+    public Attack createAttack() {
+        return new SimpleAttack("Poison Sting", 20, SimpleAttack.AttackType.STATUS);
     }
 }
